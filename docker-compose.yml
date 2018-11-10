@@ -1,0 +1,36 @@
+version: '3'
+services:
+  nginx:
+    image: nginx
+    container_name: web-server
+    working_dir: /app
+    links:
+    - php-fpm1
+    ports:
+      - 80:80
+    volumes:
+      - ./:/app
+      - ./containers/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  mysql:
+    image: mysql:5.7
+    container_name: db_mysql
+    working_dir: /var/lib/mysql
+    volumes:
+    - ./containers/mysql/db_data:/var/lib/mysql
+    restart: always
+    #ports:
+    #  - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      #MYSQL_DATABASE: wordpress
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+  php-fpm1:
+    image: bitnami/php-fpm
+    container_name: backend1
+    working_dir: /app
+    environment:
+      - BACKEND_NAME=BACKEND_1
+    volumes:
+      - ./containers/php-fpm/env.conf:/opt/bitnami/php/etc/environment.conf
+      - ./:/app

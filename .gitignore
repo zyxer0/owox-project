@@ -1,0 +1,4 @@
+/.idea
+/vendor
+/cache
+/containers/mysql/db_data
