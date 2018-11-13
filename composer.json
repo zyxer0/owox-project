@@ -14,7 +14,10 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "PHPSchool\\": ["src/", "tests/"],
+            "App\\Models\\": ["application/models/interfaces/", "application/models/"],
+            "App\\Core\\": "application/core/",
+            "App\\QueryBuilder\\": "application/queryBuilder/",
+            "App\\Paginator\\": "application/paginator/"
         }
     }
 }
