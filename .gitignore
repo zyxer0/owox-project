@@ -1,6 +1,5 @@
 /.idea
 /vendor
 /cache
-/containers/mysql/db_data
 adminer.php
 .user.ini
