@@ -2,19 +2,22 @@
 
 namespace App\Core;
 
-use App\QueryBuilder\Builder;
+use App\DB\MySQLFactory;
+use App\Http\Request;
 
 class Model
 {
 
     protected $db;
-    protected $queryBilder;
+    protected $queryBuilder;
     protected $config;
+    protected $request;
 
-    public function __construct(Database $db, Builder $queryBilder, Config $config)
+    public function __construct()
     {
-        $this->db = $db;
-        $this->queryBilder = $queryBilder;
-        $this->config = $config;
+        $this->config       = Config::getInstance();
+        $this->request      = Request::createFromGlobals();
+        $this->queryBuilder = MySQLFactory::createQueryBuilder();
+        $this->db           = MySQLFactory::createDatabase();
     }
 }

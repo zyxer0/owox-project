@@ -16,8 +16,12 @@
         "psr-4": {
             "App\\Models\\": ["application/models/interfaces/", "application/models/"],
             "App\\Core\\": "application/core/",
-            "App\\QueryBuilder\\": "application/queryBuilder/",
-            "App\\Paginator\\": "application/paginator/"
+            "App\\DB\\": "application/database/",
+            "App\\DB\\QueryBuilder\\": "application/database/queryBuilder/",
+            "App\\Paginator\\": "application/paginator/",
+            "App\\Http\\Conventions\\": "application/http/conventions/",
+            "App\\Http\\": "application/http/",
+            "App\\Controllers\\": "application/controllers/"
         }
     }
 }

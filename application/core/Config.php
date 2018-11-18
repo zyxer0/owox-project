@@ -8,7 +8,7 @@ class Config
     private $vars;
 
     /**
-     * @return Singleton
+     * @return Config
      */
     public static function getInstance()
     {

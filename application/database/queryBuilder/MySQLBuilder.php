@@ -1,9 +1,6 @@
 <?php
 
-// TODO this is factory
-
-namespace App\QueryBuilder;
-
+namespace App\DB\QueryBuilder;
 
 class MySQLBuilder implements Builder
 {
@@ -18,23 +15,6 @@ class MySQLBuilder implements Builder
     private $leftJoin = [];
     private $innerJoin = [];
     private $groupBy = [];
-    /*private static $instance = null;
-
-    public static function getInstance(): Builder
-    {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    private function __clone()
-    {
-    }
-
-    private function __construct()
-    {
-    }*/
 
     public function select(array $fields): Builder
     {

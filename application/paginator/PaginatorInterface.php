@@ -2,12 +2,13 @@
 
 namespace App\Paginator;
 
-use App\QueryBuilder\Builder;
-use App\Core\Database;
+use App\DB\QueryBuilder\Builder;
+use App\DB\Database;
+use App\Http\Request;
 
 interface PaginatorInterface
 {
-    public function __construct(Database $db, Builder $queryBilder, int $perPage);
+    public function __construct(Database $db, Builder $queryBuilder, Request $request);
 
     public function getQuery(): Builder;
 

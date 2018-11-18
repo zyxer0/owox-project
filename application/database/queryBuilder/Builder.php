@@ -1,6 +1,6 @@
 <?php
 
-namespace App\QueryBuilder;
+namespace App\DB\QueryBuilder;
 
 interface Builder
 {

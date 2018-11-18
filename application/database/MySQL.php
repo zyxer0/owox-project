@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Core;
+namespace App\DB;
 
-class Database
+class MySQL extends Database
 {
     private $dbc;
     private $queryResult;
-    private static $instance = null;
 
     /**
      * @return Database
@@ -19,7 +18,6 @@ class Database
         }
         return self::$instance;
     }
-    private function __clone() {}
 
     private function __construct($dbHost, $dbUser, $dbPass, $dbName, $dbCharset)
     {
@@ -33,7 +31,7 @@ class Database
         mysqli_close($this->dbc);
     }
 
-    public function makeQuery($query)
+    public function makeQuery(string $query): bool
     {
         $this->queryResult = mysqli_query($this->dbc, $query);
         if ($this->queryResult) {
