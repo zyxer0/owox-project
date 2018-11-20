@@ -15,11 +15,12 @@ class Paginator implements PaginatorInterface
     private $queryBuilder;
     private $entitiesCount;
     private $config;
+    private $request;
 
     public function __construct(Database $db, Builder $queryBuilder, Request $request)
     {
-        // TODO Изменить GET на Request()
-        $this->currentPage  = isset($_GET['page']) ? $_GET['page'] : 1;
+        $this->request      = $request;
+        $this->currentPage  = $this->request->query->get('page', 1);
         $this->config       = Config::getInstance();
         $this->db           = $db;
         $this->queryBuilder = $queryBuilder;
@@ -31,15 +32,14 @@ class Paginator implements PaginatorInterface
 
     public function getQuery(): Builder
     {
-        $start = ($this->currentPage-1)*$this->config->get('articlesPerPage');
-        $this->queryBuilder->limit($start, $this->config->get('articlesPerPage'));
+        $start = ($this->currentPage-1)*$this->config->get('itemsPerPage');
+        $this->queryBuilder->limit($start, $this->config->get('itemsPerPage'));
         return $this->queryBuilder;
     }
 
     public function getLinks(): array
     {
-        $currentURL = explode('?', $_SERVER['REQUEST_URI'], 2)[0]; // TODO change this!!!
-        $totalPagesNum = ceil($this->entitiesCount/$this->config->get('articlesPerPage'));
+        $totalPagesNum = ceil($this->entitiesCount/$this->config->get('itemsPerPage'));
         $paginationActiveLinks = $this->config->get('paginationActiveLinks');
         $pageFrom = 1;
         if ($this->currentPage > floor($paginationActiveLinks/2)) {
@@ -50,22 +50,32 @@ class Paginator implements PaginatorInterface
         }
         $pageTo = min($pageFrom+$paginationActiveLinks, $totalPagesNum-1);
 
+        // Prev page
         if ($this->currentPage > 1) {
-            $link['url'] = $currentURL.($this->currentPage > 2 ? '?page='.($this->currentPage - 1) : '');
+            // На первую страницу ссылка будет без параметра page
+            if ($this->currentPage > 2) {
+                $this->request->query->set('page', $this->currentPage - 1);
+            } else {
+                $this->request->query->remove('page');
+            }
+            $link['url'] = $this->request->getUri();
             $link['isLink'] = true;
             $link['isActive'] = false;
             $link['anchor'] = '&laquo;';
             $result[] = $link;
         }
 
+        //first page
         if ($this->currentPage == 1) {
-            $link['url'] = '';
+            $this->request->query->remove('page');
+            $link['url'] = $this->request->getUri();
             $link['isLink'] = false;
             $link['isActive'] = true;
             $link['anchor'] = '1';
             $result[] = $link;
         } else {
-            $link['url'] = $currentURL;
+            $this->request->query->remove('page');
+            $link['url'] = $this->request->getUri();
             $link['isLink'] = true;
             $link['isActive'] = false;
             $link['anchor'] = '1';
@@ -75,17 +85,20 @@ class Paginator implements PaginatorInterface
         for ($i=$pageFrom; $i < $pageTo; ++$i) {
             $p = $i+1;
             if (($p == $pageFrom+1 && $p!=2) || ($p == $pageTo && $p != $totalPagesNum-1)) {
-                $link['url'] = $currentURL.'?page='.$p;
+                $this->request->query->set('page', $p);
+                $link['url'] = $this->request->getUri();
                 $link['isLink'] = true;
                 $link['isActive'] = false;
                 $link['anchor'] = '...';
             } elseif ($p == $this->currentPage) {
-                $link['url'] = $currentURL.'?page='.$p;
+                $this->request->query->set('page', $p);
+                $link['url'] = $this->request->getUri();
                 $link['isLink'] = true;
                 $link['isActive'] = true;
                 $link['anchor'] = $p;
             } else {
-                $link['url'] = $currentURL.'?page='.$p;
+                $this->request->query->set('page', $p);
+                $link['url'] = $this->request->getUri();
                 $link['isLink'] = true;
                 $link['isActive'] = false;
                 $link['anchor'] = $p;
@@ -93,21 +106,18 @@ class Paginator implements PaginatorInterface
             $result[] = $link;
         }
 
-        if ($this->currentPage == $totalPagesNum) {
-            $link['url'] = '';
-            $link['isLink'] = false;
-            $link['isActive'] = false;
-            $link['anchor'] = $totalPagesNum;
-        } else {
-            $link['url'] = $currentURL.'?page='.$totalPagesNum;
-            $link['isLink'] = true;
-            $link['isActive'] = false;
-            $link['anchor'] = $totalPagesNum;
-        }
+        //last page
+        $this->request->query->set('page', $totalPagesNum);
+        $link['url'] = $this->request->getUri();
+        $link['isLink'] = ($this->currentPage == $totalPagesNum) ? true : false;
+        $link['isActive'] = false;
+        $link['anchor'] = $totalPagesNum;
         $result[] = $link;
 
+        //next page
         if ($this->currentPage<$totalPagesNum) {
-            $link['url'] = $currentURL.'?page='.($this->currentPage+1);
+            $this->request->query->set('page', $this->currentPage+1);
+            $link['url'] = $this->request->getUri();
             $link['isLink'] = true;
             $link['isActive'] = false;
             $link['anchor'] = '&raquo';

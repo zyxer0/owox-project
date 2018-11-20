@@ -94,4 +94,9 @@ interface Builder
      * @return string
      */
     public function getSQL(): string;
+
+    /**
+     * clear the SLQ query
+     */
+    public function clear(): void;
 }

@@ -58,10 +58,11 @@ class Articles extends Model implements ArticlesInterface
             ->from('articles', 'a');
 
         // Создадим класс пагинатора, который определит ссылки на пагинацию и утановит лимит на выборку
-        $this->paginator = new Paginator($this->db, $this->queryBilder);
+        $this->paginator = new Paginator($this->db, $this->queryBuilder, $this->request);
 
         $query = $this->paginator->getQuery($query);
         $sql = $query->getSQL();
+        $query->clear();
 
         $this->db->makeQuery($sql);
         if (!$articles = $this->db->results()) {
@@ -70,7 +71,6 @@ class Articles extends Model implements ArticlesInterface
 
         $result['items'] = $articles;
         $result['pagination'] = $this->paginator->getLinks();
-
         return $result;
     }
 }

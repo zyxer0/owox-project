@@ -76,6 +76,21 @@ class Request implements RequestConventions
      */
     protected $format;
 
+    /**
+     * @var string
+     */
+    protected $pathInfo;
+
+    /**
+     * @var string
+     */
+    protected $basePath;
+
+    /**
+     * @var string
+     */
+    protected $method;
+
     protected static $requestFactory;
 
     /**
@@ -121,6 +136,7 @@ class Request implements RequestConventions
         $this->basePath = null;
         $this->method = null;
         $this->format = null;
+        $this->pathInfo = null;
     }
 
     public static function createFromGlobals()
@@ -172,7 +188,17 @@ class Request implements RequestConventions
      */
     public function getScheme()
     {
-        return $this->isSecure() ? 'https' : 'http';
+
+        $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'? 'https' : 'http';
+        if($_SERVER["SERVER_PORT"] == 443) {
+            $protocol = 'https';
+        } elseif (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1'))) {
+            $protocol = 'https';
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on') {
+            $protocol = 'https';
+        }
+
+        return $protocol;
     }
 
     /**
@@ -205,6 +231,19 @@ class Request implements RequestConventions
     }
 
     /**
+     * @return mixed|null|string|string[]
+     */
+    public function getHost()
+    {
+        if (!$host = $this->headers->get('HOST')) {
+            if (!$host = $this->server->get('SERVER_NAME')) {
+                $host = $this->server->get('SERVER_ADDR', '');
+            }
+        }
+        return $host;
+    }
+
+    /**
      * Gets the scheme and HTTP host.
      *
      * If the URL was called with basic authentication, the user
@@ -214,7 +253,7 @@ class Request implements RequestConventions
      */
     public function getSchemeAndHttpHost()
     {
-        return $this->getScheme().'://'.$this->getHttpHost();
+        return $this->getScheme().'://'.$this->getHost();
     }
 
     /**
@@ -234,6 +273,29 @@ class Request implements RequestConventions
     }
 
     /**
+     * Returns the path being requested relative to the executed script.
+     *
+     * The path info always starts with a /.
+     *
+     * Suppose this request is instantiated from /mysite on localhost:
+     *
+     *  * http://localhost/mysite              returns an empty string
+     *  * http://localhost/mysite/about        returns '/about'
+     *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
+     *  * http://localhost/mysite/about?var=1  returns '/about'
+     *
+     * @return string The raw path (i.e. not urldecoded)
+     */
+    public function getPathInfo()
+    {
+        if (null === $this->pathInfo) {
+            $this->pathInfo = $this->preparePathInfo();
+        }
+
+        return $this->pathInfo;
+    }
+
+    /**
      * Generates the normalized query string for the Request.
      *
      * It builds a normalized query string, where keys/value pairs are alphabetized
@@ -243,9 +305,7 @@ class Request implements RequestConventions
      */
     public function getQueryString()
     {
-        var_dump($this->server->get('QUERY_STRING'));
-        $qs = static::normalizeQueryString($this->server->get('QUERY_STRING'));
-
+        $qs = static::buildQueryString($this->query->all());
         return '' === $qs ? null : $qs;
     }
 
@@ -282,25 +342,18 @@ class Request implements RequestConventions
     }
 
     /**
-     * Normalizes a query string.
-     *
-     * It builds a normalized query string, where keys/value pairs are alphabetized,
-     * have consistent escaping and unneeded delimiters are removed.
-     *
-     * @param string $qs Query string
+     * @param string $qa Query params array
      *
      * @return string A normalized query string for the Request
      */
-    public static function normalizeQueryString($qs)
+    public static function buildQueryString($qa)
     {
-        if ('' == $qs) {
+        if ([] == $qa) {
             return '';
         }
+        ksort($qa);
 
-        parse_str($qs, $qs);
-        ksort($qs);
-
-        return http_build_query($qs, '', '&', PHP_QUERY_RFC3986);
+        return http_build_query($qa, '', '&', PHP_QUERY_RFC3986);
     }
 
     protected function prepareRequestUri()
@@ -318,6 +371,38 @@ class Request implements RequestConventions
         $this->server->set('REQUEST_URI', $requestUri);
 
         return $requestUri;
+    }
+
+    /**
+     * Prepares the path info.
+     *
+     * @return string path info
+     */
+    protected function preparePathInfo()
+    {
+        if (null === ($requestUri = $this->getRequestUri())) {
+            return '/';
+        }
+
+        // Remove the query string from REQUEST_URI
+        if (false !== $pos = strpos($requestUri, '?')) {
+            $requestUri = substr($requestUri, 0, $pos);
+        }
+        if ('' !== $requestUri && '/' !== $requestUri[0]) {
+            $requestUri = '/'.$requestUri;
+        }
+
+        if (null === ($baseUrl = $this->getBaseUrl())) {
+            return $requestUri;
+        }
+
+        $pathInfo = substr($requestUri, \strlen($baseUrl));
+        if (false === $pathInfo || '' === $pathInfo) {
+            // If substr() returns false then PATH_INFO is set to an empty string
+            return '/';
+        }
+
+        return (string) $pathInfo;
     }
 
     /**

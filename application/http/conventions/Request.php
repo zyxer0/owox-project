@@ -81,6 +81,11 @@ interface Request
     public function getPassword();
 
     /**
+     * @return mixed|null|string|string[]
+     */
+    public function getHost();
+
+    /**
      * Returns the requested URI (path and query string).
      *
      * @return string The raw URI (i.e. not URI decoded)
@@ -105,6 +110,22 @@ interface Request
      * @see getQueryString()
      */
     public function getUri();
+
+    /**
+     * Returns the path being requested relative to the executed script.
+     *
+     * The path info always starts with a /.
+     *
+     * Suppose this request is instantiated from /mysite on localhost:
+     *
+     *  * http://localhost/mysite              returns an empty string
+     *  * http://localhost/mysite/about        returns '/about'
+     *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
+     *  * http://localhost/mysite/about?var=1  returns '/about'
+     *
+     * @return string The raw path (i.e. not urldecoded)
+     */
+    public function getPathInfo();
 
     /**
      * Generates the normalized query string for the Request.
@@ -139,16 +160,11 @@ interface Request
     public function setRequestFormat($format);
 
     /**
-     * Normalizes a query string.
-     *
-     * It builds a normalized query string, where keys/value pairs are alphabetized,
-     * have consistent escaping and unneeded delimiters are removed.
-     *
-     * @param string $qs Query string
+     * @param string $qa Query params array
      *
      * @return string A normalized query string for the Request
      */
-    public static function normalizeQueryString($qs);
+    public static function buildQueryString($qa);
 
 
 }

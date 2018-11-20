@@ -169,4 +169,21 @@ class MySQLBuilder implements Builder
         }
     }
 
+    /**
+     * clear the SLQ query
+     */
+    public function clear(): void
+    {
+        $this->query = '';
+        $this->queryType = '';
+        $this->fields = [];
+        $this->isCount = false;
+        $this->from = ['table' => '', 'alias' => null];
+        $this->where = [];
+        $this->limit = ['start' => null, 'offset' => null];
+        $this->orderBy = [];
+        $this->leftJoin = [];
+        $this->innerJoin = [];
+        $this->groupBy = [];
+    }
 }
