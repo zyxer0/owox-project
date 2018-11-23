@@ -8,7 +8,6 @@ use App\DB\QueryBuilder\Builder;
 
 abstract class BaseActiveRecord
 {
-    protected $table;
     /**
      * @var Builder
      */
@@ -28,12 +27,6 @@ abstract class BaseActiveRecord
         self::$queryBuilder = MySQLFactory::createQueryBuilder();
         self::$db           = MySQLFactory::createDatabase();
     }
-
-    /**
-     * @param $id
-     * @return BaseActiveRecord|boolean
-     */
-    abstract public static function findById($id);
 
     //abstract public function get();
     abstract public function save();

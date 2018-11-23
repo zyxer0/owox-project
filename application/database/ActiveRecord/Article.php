@@ -2,8 +2,6 @@
 
 namespace App\DB\ActiveRecord;
 
-use App\DB\MySQLFactory;
-
 class Article extends BaseActiveRecord
 {
     public $id;
@@ -28,28 +26,6 @@ class Article extends BaseActiveRecord
         $this->created      = isset($values['created']) ? $values['created'] : null;
         $this->views_count  = isset($values['views_count']) ? $values['id'] : 0;
         parent::__construct();
-    }
-
-    public static function findById($id) {
-        self::initialize();
-        $query = self::$queryBuilder->select([
-            'a.id',
-            'a.category_id',
-            'a.author_id',
-            'a.name',
-            'a.url',
-            'a.text',
-            'a.image',
-            'a.created',
-            'a.views_count',
-        ])
-            ->from('articles', 'a')
-            ->where('a.id='.$id)
-            ->limit(1)
-            ->getSQL();
-
-        self::$db->makeQuery($query);
-        return self::$db->resultActiveRecord(self::class);
     }
 
     public function save()
