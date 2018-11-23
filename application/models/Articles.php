@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Core\Model;
 use App\Paginator\Paginator;
+use App\DB\ActiveRecord\Article as ArticleActiveRecord;
 
 class Articles extends Model implements ArticlesInterface
 {
@@ -12,32 +13,10 @@ class Articles extends Model implements ArticlesInterface
 
     public function getArticleByID(int $id)
     {
-        $query = $this->queryBuilder->select([
-            'a.id',
-            'a.category_id',
-            'a.author_id',
-            'a.name',
-            'a.url',
-            'a.text',
-            'a.image',
-            'a.created',
-            'a.views_count',
-        ])
-            ->from('articles', 'a')
-            ->where('a.id='.$id)
-            ->limit(1)
-            ->getSQL();
 
-        echo $query = $this->queryBuilder->count('a.id')
-            ->from('articles', 'a')
-            ->where('a.id='.$id)
-            ->limit(1)
-            ->getSQL();
+        $article = ArticleActiveRecord::findById($id);
 
-        $this->db->makeQuery($query);
-        if (!$article = $this->db->result()) {
-            return false;
-        }
+        // TODO Здесь будет доставание еще автора, мож еще инфа какая
 
         return $article;
     }

@@ -18,6 +18,7 @@
             "App\\Core\\": "application/core/",
             "App\\DB\\": "application/database/",
             "App\\DB\\QueryBuilder\\": "application/database/queryBuilder/",
+            "App\\DB\\ActiveRecord\\": "application/database/activeRecord/",
             "App\\Paginator\\": "application/paginator/",
             "App\\Http\\Conventions\\": "application/http/conventions/",
             "App\\Http\\": "application/http/",

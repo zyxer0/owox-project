@@ -30,7 +30,13 @@ $db = \App\Core\Database::getInstance(
 //$queryBuilder = new App\QueryBuilder\MySQLBuilder();
 
 $articlesInstance = new App\Models\Articles();
-$articles = $articlesInstance->getArticles();
+$articles = $articlesInstance->getArticleByID(1);
+
+$ar = new App\DB\ActiveRecord\Article([
+    'name'=>'First from AR'
+]);
+
+var_dump($ar);
 //$article = $articlesInstance->getArticleByID(1);
 /*$articles = $articlesInstance->getArticles();
 foreach ($articles['pagination'] as $p) {

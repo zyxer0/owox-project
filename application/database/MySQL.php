@@ -2,6 +2,9 @@
 
 namespace App\DB;
 
+use App\DB\ActiveRecord\BaseActiveRecord;
+use mysql_xdevapi\Exception;
+
 class MySQL extends Database
 {
     private $dbc;
@@ -73,6 +76,22 @@ class MySQL extends Database
             }
 
             return $row;
+        }
+        return false;
+    }
+
+    /**
+     * @param $activeRecord
+     * @return BaseActiveRecord|boolean
+     */
+    public function resultActiveRecord($activeRecord)
+    {
+        if(!$this->queryResult){
+            return false;
+        }
+
+        if($row = mysqli_fetch_assoc($this->queryResult)){
+            return new $activeRecord($row);
         }
         return false;
     }

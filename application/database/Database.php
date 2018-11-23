@@ -2,6 +2,8 @@
 
 namespace App\DB;
 
+use App\DB\ActiveRecord\BaseActiveRecord;
+
 abstract class Database
 {
     protected static $instance = null;
@@ -32,10 +34,13 @@ abstract class Database
     abstract public function result($field = null);
 
     /**
+     * @param $activeRecord
+     * @return BaseActiveRecord|boolean
+     */
+    abstract public function resultActiveRecord($activeRecord);
+
+    /**
      * @return int|string
      */
-    public function insert_id()
-    {
-        return mysqli_insert_id($this->dbc);
-    }
+    abstract public function insert_id();
 }
