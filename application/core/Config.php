@@ -26,9 +26,14 @@ class Config
 
     private function __clone() {}
     private function __construct() {
-        $ini = parse_ini_file(dirname(dirname(__DIR__)).'/config/config.ini');
+        // Определяем корневую директорию приложения
+        $this->vars['rootDir'] =  dirname(dirname(__DIR__)).'/';
+
+        $ini = parse_ini_file($this->vars['rootDir'].'config/config.ini');
         foreach($ini as $var=>$value) {
             $this->vars[$var] = $value;
         }
+
+
     }
 }

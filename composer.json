@@ -11,7 +11,9 @@
             "email": "yanchuk.oleg2@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "smarty/smarty": "3.1.18"
+    },
     "autoload": {
         "psr-4": {
             "App\\Models\\": ["application/models/interfaces/", "application/models/"],

@@ -11,6 +11,11 @@ class MySQL extends Database
     private $queryResult;
 
     /**
+     * @param $dbHost
+     * @param $dbUser
+     * @param $dbPass
+     * @param $dbName
+     * @param string $dbCharset
      * @return Database
      */
     public static function getInstance($dbHost, $dbUser, $dbPass, $dbName, $dbCharset = 'utf8')

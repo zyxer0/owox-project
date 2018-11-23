@@ -6,7 +6,7 @@ use App\Core\Model;
 use App\Paginator\Paginator;
 use App\DB\ActiveRecord\Article as ArticleActiveRecord;
 
-class Articles extends Model implements ArticlesInterface
+class Articles extends Model
 {
 
     private $paginator;

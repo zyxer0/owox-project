@@ -29,6 +29,10 @@ $db = \App\Core\Database::getInstance(
 // TODO replace to factory or abstract factory with DB
 //$queryBuilder = new App\QueryBuilder\MySQLBuilder();
 
+$page = new App\Controllers\Main();
+print $page->index();
+die;
+
 $articlesInstance = new App\Models\Articles();
 $articles = $articlesInstance->getArticleByID(1);
 

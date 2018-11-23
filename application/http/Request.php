@@ -91,21 +91,43 @@ class Request implements RequestConventions
      */
     protected $method;
 
-    protected static $requestFactory;
+    /**
+     * @var Request
+     */
+    protected static $instance;
+
+    /**
+     * @return Request
+     */
+    public static function getInstance()
+    {
+        if (null === self::$instance)
+        {
+            $request = new self($_GET, $_POST, $_COOKIE, $_FILES, $_SERVER);
+            if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded')
+                && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('PUT', 'DELETE', 'PATCH'))
+            ) {
+                parse_str($request->getContent(), $data);
+                $request->request = new ParameterBag($data);
+            }
+            self::$instance = $request;
+        }
+        return self::$instance;
+    }
 
     /**
      * @param array $query The GET parameters
      * @param array $request The POST parameters
-     * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
      * @param array $cookies The COOKIE parameters
      * @param array $files The FILES parameters
      * @param array $server The SERVER parameters
-     * @param string|resource|null $content The raw body data
      */
-    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    private function __construct(array $query = array(), array $request = array(), array $cookies = array(), array $files = array(), array $server = array())
     {
-        $this->initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+        $this->initialize($query, $request, $cookies, $files, $server);
     }
+
+    private function __clone() {}
 
     /**
      * Sets the parameters for this request.
@@ -114,43 +136,26 @@ class Request implements RequestConventions
      *
      * @param array $query The GET parameters
      * @param array $request The POST parameters
-     * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
      * @param array $cookies The COOKIE parameters
      * @param array $files The FILES parameters
      * @param array $server The SERVER parameters
-     * @param string|resource|null $content The raw body data
      */
-    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    private function initialize(array $query = array(), array $request = array(), array $cookies = array(), array $files = array(), array $server = array())
     {
-        $this->request = new ParameterBag($request);
-        $this->query = new ParameterBag($query);
-        $this->attributes = new ParameterBag($attributes);
-        $this->cookies = new ParameterBag($cookies);
-        $this->files = new FileBag($files);
-        $this->server = new ServerBag($server);
-        $this->headers = new HeaderBag($this->server->getHeaders());
+        $this->request  = new ParameterBag($request);
+        $this->query    = new ParameterBag($query);
+        $this->cookies  = new ParameterBag($cookies);
+        $this->files    = new FileBag($files);
+        $this->server   = new ServerBag($server);
+        $this->headers  = new HeaderBag($this->server->getHeaders());
 
-        $this->content = $content;
-        $this->requestUri = null;
-        $this->baseUrl = null;
-        $this->basePath = null;
-        $this->method = null;
-        $this->format = null;
-        $this->pathInfo = null;
-    }
-
-    public static function createFromGlobals()
-    {
-        $request = self::createRequestFromFactory($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
-
-        if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded')
-            && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('PUT', 'DELETE', 'PATCH'))
-        ) {
-            parse_str($request->getContent(), $data);
-            $request->request = new ParameterBag($data);
-        }
-
-        return $request;
+        $this->content      = null;
+        $this->requestUri   = null;
+        $this->baseUrl      = null;
+        $this->basePath     = null;
+        $this->method       = null;
+        $this->format       = null;
+        $this->pathInfo     = null;
     }
 
     public function getContent()
@@ -166,9 +171,6 @@ class Request implements RequestConventions
      * Returns the root URL from which this request is executed.
      *
      * The base URL never ends with a /.
-     *
-     * This is similar to getBasePath(), except that it also includes the
-     * script filename (e.g. index.php) if one exists.
      *
      * @return string The raw URL (i.e. not urldecoded)
      */
@@ -342,7 +344,7 @@ class Request implements RequestConventions
     }
 
     /**
-     * @param string $qa Query params array
+     * @param array $qa Query params array
      *
      * @return string A normalized query string for the Request
      */
@@ -396,7 +398,7 @@ class Request implements RequestConventions
             return $requestUri;
         }
 
-        $pathInfo = substr($requestUri, \strlen($baseUrl));
+        $pathInfo = substr($requestUri, strlen($baseUrl));
         if (false === $pathInfo || '' === $pathInfo) {
             // If substr() returns false then PATH_INFO is set to an empty string
             return '/';
@@ -493,20 +495,5 @@ class Request implements RequestConventions
         }
 
         return false;
-    }
-
-    private static function createRequestFromFactory(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
-    {
-        if (self::$requestFactory) {
-            $request = call_user_func(self::$requestFactory, $query, $request, $attributes, $cookies, $files, $server, $content);
-
-            if (!$request instanceof self) {
-                throw new \Exception('The Request factory must return an instance of App\Http\Request.');
-            }
-
-            return $request;
-        }
-
-        return new static($query, $request, $attributes, $cookies, $files, $server, $content);
     }
 }
