@@ -19,8 +19,8 @@ class Article extends BaseActiveRecord
     public function __construct($values = [])
     {
         $this->id           = isset($values['id']) ? $values['id'] : null;
-        $this->category_id  = isset($values['category_id']) ? $values['category_id'] : null;
-        $this->author_id    = isset($values['author_id']) ? $values['author_id'] : null;
+        $this->category_id  = isset($values['category_id']) ? $values['category_id'] : 0;
+        $this->author_id    = isset($values['author_id']) ? $values['author_id'] : 0;
         $this->name         = isset($values['name']) ? $values['name'] : '';
         $this->url          = isset($values['url']) ? $values['url'] : '';
         $this->text         = isset($values['text']) ? $values['text'] : '';
@@ -31,9 +31,8 @@ class Article extends BaseActiveRecord
     }
 
     public static function findById($id) {
-        $queryBuilder = MySQLFactory::createQueryBuilder();
-        $db           = MySQLFactory::createDatabase();
-        $query = $queryBuilder->select([
+        self::initialize();
+        $query = self::$queryBuilder->select([
             'a.id',
             'a.category_id',
             'a.author_id',
@@ -49,22 +48,33 @@ class Article extends BaseActiveRecord
             ->limit(1)
             ->getSQL();
 
-        $db->makeQuery($query);
-        return $db->resultActiveRecord(self::class);
+        self::$db->makeQuery($query);
+        return self::$db->resultActiveRecord(self::class);
     }
 
     public function save()
     {
-        // TODO: Implement save() method.
+        $sql = self::$queryBuilder->insert('articles')->set($this)->getSQL();
+        self::$db->makeQuery($sql);
+        $this->id = self::$db->insertId();
     }
 
     public function update()
     {
-        // TODO: Implement update() method.
+        $sql = self::$queryBuilder->update('articles')
+            ->set($this)
+            ->where('id='.$this->id)
+            ->limit(1)
+            ->getSQL();
+        self::$db->makeQuery($sql);
     }
 
     public function delete()
     {
-        // TODO: Implement delete() method.
+        $sql = self::$queryBuilder->delete('articles')
+            ->where('id='.$this->id)
+            ->limit(1)
+            ->getSQL();
+        self::$db->makeQuery($sql);
     }
 }

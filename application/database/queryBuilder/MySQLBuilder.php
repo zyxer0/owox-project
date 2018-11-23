@@ -15,9 +15,12 @@ class MySQLBuilder implements Builder
     private $leftJoin = [];
     private $innerJoin = [];
     private $groupBy = [];
+    private $table = '';
+    private $values = [];
 
     public function select(array $fields): Builder
     {
+        $this->clear();
         $this->queryType = 'SELECT';
         $this->fields = $fields;
         return $this;
@@ -29,21 +32,27 @@ class MySQLBuilder implements Builder
         return $this;
     }
 
-    public function delete(): Builder
+    public function delete($table): Builder
     {
-        // TODO: Implement delete() method.
+        $this->clear();
+        $this->queryType = 'DELETE';
+        $this->table = $table;
         return $this;
     }
 
     public function update(string $table): Builder
     {
-        // TODO: Implement update() method.
+        $this->clear();
+        $this->queryType = 'UPDATE';
+        $this->table = $table;
         return $this;
     }
 
     public function insert(string $table): Builder
     {
-        // TODO: Implement insert() method.
+        $this->clear();
+        $this->queryType = 'INSERT';
+        $this->table = $table;
         return $this;
     }
 
@@ -54,9 +63,18 @@ class MySQLBuilder implements Builder
         return $this;
     }
 
-    public function set(string $key, string $value): Builder
+    public function set($values): Builder
     {
-        // TODO: Implement set() method.
+        foreach ($values as $field=>$value) {
+
+            if (null === $value) {
+                $value = 'null';
+            } elseif (gettype($value) == 'string') {
+                $value = "'{$value}'";
+            }
+
+            $this->values[$field] = $value;
+        }
         return $this;
     }
 
@@ -125,6 +143,30 @@ class MySQLBuilder implements Builder
     {
         $this->query = $this->queryType;
 
+        switch ($this->queryType) {
+            case 'SELECT' :
+                $this->buildSelect();
+                break;
+            case 'DELETE' :
+                $this->buildDelete();
+                break;
+            case 'INSERT' :
+                $this->buildInsert();
+                break;
+            case 'UPDATE' :
+                $this->buildUpdate();
+                break;
+        }
+
+        // todo JOIN
+
+        if (isset($this->limit['start'])) {
+            $this->query .= ' LIMIT ' . $this->limit['start']
+                . (!empty($this->limit['offset']) ? ', '.$this->limit['offset'] : '');
+        }
+    }
+
+    private function buildSelect() {
         if (!$this->isCount) {
             $this->query .= ' '.implode(', ', $this->fields);
         } else {
@@ -132,10 +174,7 @@ class MySQLBuilder implements Builder
             $this->isCount = false;
         }
 
-        $this->query .= ' FROM ' . $this->from['table'] . ($this->from['alias'] !== null ? ' AS '
-                . $this->from['alias'] : '');
-
-        // todo JOIN
+        $this->query .= ' FROM ' . $this->from['table'] . ($this->from['alias'] !== null ? ' AS '   . $this->from['alias'] : '');
 
         if (!empty($this->where)) {
             $this->query .= ' WHERE ' . implode(' ', $this->where);
@@ -149,9 +188,32 @@ class MySQLBuilder implements Builder
             $this->query .= ' GROUP BY ' . implode(', ', $this->groupBy);
         }
 
-        if (isset($this->limit['start'])) {
-            $this->query .= ' LIMIT ' . $this->limit['start']
-                . (!empty($this->limit['offset']) ? ', '.$this->limit['offset'] : '');
+    }
+
+    private function buildInsert() {
+        $this->query .= ' INTO ' . $this->table . ' ('
+            . implode(', ', array_keys($this->values))
+            . ') VALUES (' . implode(', ', $this->values) . ')';
+
+    }
+
+    private function buildUpdate() {
+        $valuesArray = [];
+        foreach ($this->values as $field=>$value) {
+            $valuesArray[] = $field . ' = ' . $value;
+        }
+        $this->query .= ' ' . $this->table . ' SET '
+            . implode(', ', $valuesArray);
+
+        if (!empty($this->where)) {
+            $this->query .= ' WHERE ' . implode(' ', $this->where);
+        }
+    }
+
+    private function buildDelete() {
+        $this->query .= ' FROM ' . $this->table;
+        if (!empty($this->where)) {
+            $this->query .= ' WHERE ' . implode(' ', $this->where);
         }
     }
 
@@ -160,11 +222,11 @@ class MySQLBuilder implements Builder
         // Validation SQL
         if ($this->queryType == 'SELECT') {
             if (empty($this->fields) && !$this->isCount) {
-                throw new \Exception('Empty SELECT fields');
+                new \Exception('Empty SELECT fields');
             }
 
             if (empty($this->from['table'])) {
-                throw new \Exception('Empty table name');
+                new \Exception('Empty table name');
             }
         }
     }
@@ -185,5 +247,7 @@ class MySQLBuilder implements Builder
         $this->leftJoin = [];
         $this->innerJoin = [];
         $this->groupBy = [];
+        $this->table = '';
+        $this->values = [];
     }
 }

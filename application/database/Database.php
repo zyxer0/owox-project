@@ -42,5 +42,5 @@ abstract class Database
     /**
      * @return int|string
      */
-    abstract public function insert_id();
+    abstract public function insertId();
 }

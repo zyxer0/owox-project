@@ -96,7 +96,7 @@ class MySQL extends Database
         return false;
     }
 
-    public function insert_id()
+    public function insertId()
     {
         return mysqli_insert_id($this->dbc);
     }

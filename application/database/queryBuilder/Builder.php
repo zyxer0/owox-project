@@ -19,9 +19,10 @@ interface Builder
     public function count(): Builder;
 
     /**
+     * @param string $table
      * @return Builder
      */
-    public function delete(): Builder;
+    public function delete($table): Builder;
 
     /**
      * @param string $table
@@ -43,11 +44,12 @@ interface Builder
     public function from(string $table, string $alias = null): Builder;
 
     /**
-     * @param string $key
-     * @param string $value
+     * @param $values
+     * example ['field1'=>'value1', 'field2'=>'value2']
+     * OR instance App\DB\ActiveRecord\BaseActiveRecord
      * @return Builder
      */
-    public function set(string $key, string $value): Builder;
+    public function set($values): Builder;
 
     /**
      * @param string $where
