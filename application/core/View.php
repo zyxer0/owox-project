@@ -37,6 +37,7 @@ class View
             mkdir($this->smarty->getCompileDir(), 0777);
         }
         $this->assign('request', $this->request);
+        $this->assign('config',  $this->config);
     }
 
     /**
