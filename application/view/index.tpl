@@ -6,9 +6,9 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
+    <title>{$title|escape}</title>
+    <meta name="description" content="{$description|escape}" />
+    <meta name="keywords" content="{$keywords|escape}" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 

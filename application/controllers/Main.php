@@ -14,6 +14,11 @@ class Main extends Controller
         $this->articlesInstance = new ArticlesModel();
         $articles = $this->articlesInstance->getArticlesForMainPage(20);
         $this->view->assign('articles', $articles);
-        return $this->view->render('main.tpl');
+
+        $this->view->assign('title', 'Main page php school');
+        $this->view->assign('description', 'Main page php school');
+        $this->view->assign('keywords', 'Main page php school' );
+
+        $this->response->setContent($this->view->render('main.tpl'));
     }
 }

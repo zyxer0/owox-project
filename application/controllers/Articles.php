@@ -13,6 +13,7 @@ class Articles extends Controller
         $articlesInstance = new ArticlesModel();
         if (!$article = $articlesInstance->getArticleByID((int)$params['id'])) {
             Router::page404();
+            exit;
         }
 
         //Увеличим просмотры
@@ -20,6 +21,11 @@ class Articles extends Controller
         $article->update(); // todo Не увеличивать когда обновляется страница
 
         // TODO get author and other
-        return $article;
+
+        $this->view->assign('title', $article->name);
+        $this->view->assign('description', $article->name);
+        $this->view->assign('keywords', $article->name);
+        $this->view->assign('article', $article);
+        $this->response->setContent($this->view->render('article.tpl'));
     }
 }
