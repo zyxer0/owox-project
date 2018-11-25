@@ -35,7 +35,7 @@ class Articles extends Model
         return $article;
     }
 
-    public function getArticlesCategoryId($categoryId)
+    public function getArticlesByCategoryId(int $categoryId)
     {
         $this->queryBuilder->select([
             'a.id',

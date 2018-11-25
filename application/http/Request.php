@@ -84,6 +84,11 @@ class Request implements RequestConventions
     /**
      * @var string
      */
+    protected $pathArray;
+
+    /**
+     * @var string
+     */
     protected $basePath;
 
     /**
@@ -156,6 +161,7 @@ class Request implements RequestConventions
         $this->method       = null;
         $this->format       = null;
         $this->pathInfo     = null;
+        $this->pathArray    = null;
     }
 
     public function getContent()
@@ -295,6 +301,19 @@ class Request implements RequestConventions
         }
 
         return $this->pathInfo;
+    }
+
+    public function getPathArray()
+    {
+        if (null === $this->pathArray) {
+            $pathInfo = $this->getPathInfo();
+
+            $this->pathArray = explode('/', $pathInfo);
+            $this->pathArray = array_filter($this->pathArray, function($element) {
+                return !empty($element);
+            });
+        }
+        return $this->pathArray;
     }
 
     /**

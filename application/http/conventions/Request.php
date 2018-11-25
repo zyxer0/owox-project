@@ -97,9 +97,16 @@ interface Request
      *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
      *  * http://localhost/mysite/about?var=1  returns '/about'
      *
-     * @return string The raw path (i.e. not urldecoded)
+     * @return string The raw path (i.e. not urldecoded)gbbbb
      */
     public function getPathInfo();
+
+    /**
+     * @return path array
+     *  * http://localhost/mysite              returns an empty array
+     *  * http://localhost/mysite/about/pate   returns ['about', 'page']
+     */
+    public function getPathArray();
 
     /**
      * Generates the normalized query string for the Request.

@@ -24,7 +24,7 @@ class Article extends BaseActiveRecord
         $this->text         = isset($values['text']) ? $values['text'] : '';
         $this->image        = isset($values['image']) ? $values['image'] : '';
         $this->created      = isset($values['created']) ? $values['created'] : null;
-        $this->views_count  = isset($values['views_count']) ? $values['id'] : 0;
+        $this->views_count  = isset($values['views_count']) ? $values['views_count'] : 0;
         parent::__construct();
     }
 
