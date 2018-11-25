@@ -1,1 +1,26 @@
-body {background-color: powderblue;}
+body {background-color: #fff;}
+
+.container {
+    max-width: 1200px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.articles_list .image {
+    width: 180px;
+    overflow: hidden;
+    margin: 0 auto;
+    display: block;
+}
+.articles_list .image img {
+    width: 100%;
+}
+.article_item {
+    margin-bottom: 15px;
+}
+
+.sidebar {
+    border-right: 1px solid #ddd;
+}

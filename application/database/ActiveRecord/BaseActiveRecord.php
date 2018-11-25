@@ -28,7 +28,7 @@ abstract class BaseActiveRecord
         self::$db           = MySQLFactory::createDatabase();
     }
 
-    //abstract public function get();
+    // todo Может реализацию перенести сюда
     abstract public function save();
     abstract public function update();
     abstract public function delete();
