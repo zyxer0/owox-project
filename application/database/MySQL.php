@@ -35,8 +35,14 @@ class MySQL extends Database
         }
         mysqli_set_charset($this->dbc, $dbCharset);
     }
+
     function __destruct(){
         mysqli_close($this->dbc);
+    }
+
+    public function escapeString($value):string
+    {
+        return mysqli_real_escape_string($this->dbc, $value);
     }
 
     public function makeQuery(string $query): bool

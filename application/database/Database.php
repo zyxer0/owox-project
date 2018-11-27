@@ -16,6 +16,12 @@ abstract class Database
     private function __clone() {}
 
     /**
+     * @param $value
+     * @return string
+     */
+    abstract public function escapeString($value): string;
+
+    /**
      * @param $query
      * @return bool
      */

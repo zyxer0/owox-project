@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "smarty/smarty": "3.1.18"
+        "smarty/smarty": "3.1.18",
+        "fzaninotto/faker": "^1.8"
     },
     "autoload": {
         "psr-4": {

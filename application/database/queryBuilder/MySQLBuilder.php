@@ -2,6 +2,9 @@
 
 namespace App\DB\QueryBuilder;
 
+use App\DB\Database;
+use App\DB\MySQLFactory;
+
 class MySQLBuilder implements Builder
 {
     private $query;
@@ -17,6 +20,15 @@ class MySQLBuilder implements Builder
     private $groupBy = [];
     private $table = '';
     private $values = [];
+    /**
+     * @var Database
+     */
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = MySQLFactory::createDatabase();
+    }
 
     public function select(array $fields): Builder
     {
@@ -70,6 +82,7 @@ class MySQLBuilder implements Builder
             if (null === $value) {
                 $value = 'null';
             } elseif (gettype($value) == 'string') {
+                $value = $this->db->escapeString($value);
                 $value = "'{$value}'";
             }
 
