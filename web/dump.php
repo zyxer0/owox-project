@@ -36,7 +36,7 @@ function generationArticles()
         $catId = $categories[rand(1, 36)]->id;
         $categories[$catId]->articles_count++;
 
-        if (rand(0, 666) == 159) {
+        if (rand(0, 160) == 159) {
             $image = $faker->image(dirname(__DIR__) . '/images', 640, 480, 'cats', false);
         } else {
             $image = '';

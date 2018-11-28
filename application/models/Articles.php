@@ -35,7 +35,7 @@ class Articles extends Model
         return $article;
     }
 
-    public function getArticlesByCategoryId(int $categoryId)
+    public function getArticlesList()
     {
         $this->queryBuilder->select([
             'a.id',
@@ -49,7 +49,6 @@ class Articles extends Model
             'a.views_count',
         ])
             ->from('articles', 'a')
-            ->where('a.category_id='.$categoryId)
             ->orderBy('a.created DESC');
 
         // Создадим класс пагинатора, который определит ссылки на пагинацию и утановит лимит на выборку

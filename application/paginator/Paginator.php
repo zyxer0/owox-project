@@ -93,7 +93,7 @@ class Paginator implements PaginatorInterface
             } elseif ($p == $this->currentPage) {
                 $this->request->query->set('page', $p);
                 $link['url'] = $this->request->getUri();
-                $link['isLink'] = true;
+                $link['isLink'] = false;
                 $link['isActive'] = true;
                 $link['anchor'] = $p;
             } else {
@@ -109,7 +109,7 @@ class Paginator implements PaginatorInterface
         //last page
         $this->request->query->set('page', $totalPagesNum);
         $link['url'] = $this->request->getUri();
-        $link['isLink'] = ($this->currentPage == $totalPagesNum) ? true : false;
+        $link['isLink'] = ($this->currentPage != $totalPagesNum) ? true : false;
         $link['isActive'] = false;
         $link['anchor'] = $totalPagesNum;
         $result[] = $link;

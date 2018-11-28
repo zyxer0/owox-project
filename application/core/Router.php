@@ -29,6 +29,10 @@ class Router
                 'id',
             ]
         ],
+        '(admin|admin\/articles)' => [
+            'controller' => \App\Controllers\AdminArticles::class,
+            'method'     => 'showArticlesList',
+        ],
     ],
     'POST' => [
 
