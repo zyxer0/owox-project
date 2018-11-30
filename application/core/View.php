@@ -41,6 +41,22 @@ class View
     }
 
     /**
+     * @param string $dir
+     */
+    public function setCompileDir(string $dir)
+    {
+        $this->smarty->setCompileDir($dir);
+    }
+
+    /**
+     * @param string $dir
+     */
+    public function setTemplateDir(string $dir)
+    {
+        $this->smarty->setTemplateDir($dir);
+    }
+
+    /**
      * @param $template
      * @return string
      * @throws \SmartyException

@@ -18,7 +18,7 @@ class Main extends Controller
         $this->view->assign('articles', $articles);
 
         $this->authorsInstance = new AuthorsModel();
-        $authors = $this->authorsInstance->getAuthorsTagCloud();
+        $authors = $this->authorsInstance->getAllAuthors();
         $this->view->assign('authors', $authors);
 
         $this->view->assign('title', 'Main page php school');

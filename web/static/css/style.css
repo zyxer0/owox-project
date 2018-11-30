@@ -48,3 +48,7 @@ body {
 .sidebar {
     border-right: 1px solid #ddd;
 }
+.sidebar .seo-tags-area {
+    max-height: 500px;
+    overflow-y: auto;
+}

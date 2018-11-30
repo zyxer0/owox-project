@@ -7,7 +7,7 @@ use App\DB\ActiveRecord\Author as AuthorActiveRecord;
 
 class Authors extends Model
 {
-    public function getAuthorsTagCloud()
+    public function getAllAuthors()
     {
         $query = $this->queryBuilder->select([
             'a.id',

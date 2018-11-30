@@ -6,9 +6,11 @@
                 <a href="#" class="list-group-item active">
                     Авторы
                 </a>
-                {foreach $authors as $a}
-                    <a href="#" class="list-group-item">{$a->last_name|escape} {$a->first_name|escape}</a>
-                {/foreach}
+                <div class="seo-tags-area">
+                    {foreach $authors as $a}
+                        <a href="#" class="list-group-item">{$a->last_name|escape} {$a->first_name|escape}</a>
+                    {/foreach}
+                </div>
             </div>
             {/if}
         </div>

@@ -22,20 +22,31 @@ class Router
             'controller' => \App\Controllers\Main::class,
             'method'     => 'index',
         ],
-        'article\/([0-9]+)' => [
+        'article/([0-9]+)' => [
             'controller' => \App\Controllers\Articles::class,
             'method'     => 'showArticle',
             'params'     => [
                 'id',
             ]
         ],
-        '(admin|admin\/articles)' => [
+        '(admin|admin/articles)' => [
             'controller' => \App\Controllers\AdminArticles::class,
             'method'     => 'showArticlesList',
         ],
+        'admin/article/add' => [
+            'controller' => \App\Controllers\AdminArticles::class,
+            'method'     => 'prepareAddArticle',
+        ],
     ],
     'POST' => [
-
+        'admin/article/remove' => [
+            'controller' => \App\Controllers\AdminArticles::class,
+            'method'     => 'removeArticle',
+        ],
+        'admin/article/add' => [
+            'controller' => \App\Controllers\AdminArticles::class,
+            'method'     => 'addArticle',
+        ],
     ],
     '404'=>[
         'controller' => \App\Controllers\Page404::class,
@@ -55,7 +66,7 @@ class Router
 
         // Проверяем роуты для текущего HTTP метода запроса
         foreach (self::$routes[self::$httpMethod] as $route=>$routeParams) {
-            if (preg_match('/^'.$route.'$/i', $path, $matches)) {
+            if (preg_match('~^'.$route.'$~i', $path, $matches)) {
                 if (!empty($matches) && isset($routeParams['params'])) {
                     unset($matches[0]);
                     $matches = array_values($matches);
@@ -96,6 +107,7 @@ class Router
         // Проверяем есть ли такой контроллер
         if (!class_exists($class)) {
             self::page404();
+            exit;
         }
 
         // Создаем экземпляр скасса контроллера
@@ -104,6 +116,7 @@ class Router
         // Проверяем есть ли такой метод
         if (!method_exists($controller, $method)) {
             self::page404();
+            exit;
         }
 
         // Вызываем метод контроллера с передачей параметров
