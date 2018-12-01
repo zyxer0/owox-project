@@ -37,6 +37,13 @@ class Router
             'controller' => \App\Controllers\AdminArticles::class,
             'method'     => 'prepareAddArticle',
         ],
+        'admin/article/edit/([0-9]+)' => [
+            'controller' => \App\Controllers\AdminArticles::class,
+            'method'     => 'showArticle',
+            'params'     => [
+                'id',
+            ]
+        ],
     ],
     'POST' => [
         'admin/article/remove' => [
@@ -46,6 +53,13 @@ class Router
         'admin/article/add' => [
             'controller' => \App\Controllers\AdminArticles::class,
             'method'     => 'addArticle',
+        ],
+        'admin/article/update/([0-9]+)' => [
+            'controller' => \App\Controllers\AdminArticles::class,
+            'method'     => 'updateArticle',
+            'params'     => [
+                'id',
+            ]
         ],
     ],
     '404'=>[

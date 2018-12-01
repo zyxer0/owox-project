@@ -103,6 +103,7 @@ class Request implements RequestConventions
 
     /**
      * @return Request
+     * @throws \Exception
      */
     public static function getInstance()
     {

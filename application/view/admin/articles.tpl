@@ -30,7 +30,7 @@
                             <a href="/admin/article/edit/{$a->id}">{$a->name|escape}</a>
                         </td>
                         <td class="action">
-                            <a href="/article/{$a->id}" target="_blank" title="Открыть на сайте">ЙЙЙ</a>
+                            <a href="/article/{$a->id}" target="_blank" title="Открыть на сайте">&rarr;</a>
                         </td>
                     </tr>
                 {/foreach}

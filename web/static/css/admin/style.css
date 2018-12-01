@@ -54,6 +54,26 @@ body {
     text-align: center;
 }
 .action_button {
-    margin-top: 15px;
+    margin: 15px 0;
     text-align: right;
+}
+.article_image {
+    width: 362px;
+    height: 362px;
+    line-height: 362px;
+    text-align: center;
+    padding: 0;
+    vertical-align: middle;
+    overflow: hidden;
+    position: relative;
+}
+.delete_image {
+    display: block;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background: url('/static/images/delete-button.png') no-repeat 50%;
 }

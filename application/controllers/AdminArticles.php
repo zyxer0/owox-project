@@ -5,7 +5,9 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Router;
 use App\DB\ActiveRecord\Article;
+use App\Http\UploadedFile;
 use App\Models\Authors;
+use App\Models\Categories;
 
 class AdminArticles extends Controller
 {
@@ -34,6 +36,10 @@ class AdminArticles extends Controller
         $this->response->setContent($this->view->render('articles.tpl'));
     }
 
+    /**
+     * Просмотр стетьи
+     * method GET
+     */
     public function showArticle($params = [])
     {
         if (!$article = $this->articlesModel->getArticleByID((int)$params['id'])) {
@@ -41,17 +47,57 @@ class AdminArticles extends Controller
             exit;
         }
 
-        //Увеличим просмотры
-        $article->views_count++;
-        $article->update(); // todo Не увеличивать когда обновляется страница
+        $authorsInstance = new Authors();
+        $authors = $authorsInstance->getAllAuthors();
 
-        // TODO get author and other
+        $categoriesInstance = new Categories();
+        $categories = $categoriesInstance->getAllCategories();
 
-        $this->view->assign('title', $article->name);
-        $this->view->assign('description', $article->name);
-        $this->view->assign('keywords', $article->name);
+        $this->view->assign('title', 'Update '. $article->name);
         $this->view->assign('article', $article);
-        $this->response->setContent($this->view->render('article.tpl'));
+        $this->view->assign('authors', $authors);
+        $this->view->assign('categories', $categories);
+        $this->response->setContent($this->view->render('update_article.tpl'));
+    }
+
+    /**
+     * Обновление статьи
+     * method POST
+     */
+    public function updateArticle($params = [])
+    {
+        if (!$article = $this->articlesModel->getArticleByID((int)$params['id'])) {
+            Router::page404();
+            exit;
+        }
+        $image = null;
+
+        $article->author_id     = $this->request->request->get('author_id');
+        $article->category_id   = $this->request->request->get('category_id');
+        $article->name          = $this->request->request->get('name');
+        $article->text          = $this->request->request->get('text');
+
+        //Обнулим просмотры
+        $article->views_count = 0;
+
+        $imagesPath = $this->config->get('rootDir') . $this->config->get('articlesImagesPath');
+        // Удаление изображения если нажали удалить или загружают новое
+        if (($this->request->request->get('delete_image', 0) == 1
+            || ($image = $this->request->files->get('image')))
+            && $article->image) {
+            $currentImage = new UploadedFile($imagesPath, $article->image);
+            $currentImage->remove();
+            $article->image = '';
+        }
+
+        //Загрузка изображения
+        if ($image) {
+            $article->image = $image->getUniqueName($imagesPath);
+            $image->move($imagesPath, $article->image);
+        }
+
+        $article->update();
+        $this->response->headers->set('Location', '/admin/article/edit/' . $article->id);
     }
 
     /**
@@ -64,8 +110,12 @@ class AdminArticles extends Controller
         $authorsInstance = new Authors();
         $authors = $authorsInstance->getAllAuthors();
 
+        $categoriesInstance = new Categories();
+        $categories = $categoriesInstance->getAllCategories();
+
         $this->view->assign('title', 'New article');
         $this->view->assign('authors', $authors);
+        $this->view->assign('categories', $categories);
         $this->response->setContent($this->view->render('add_article.tpl'));
     }
 
@@ -76,8 +126,15 @@ class AdminArticles extends Controller
     public function addArticle($params = [])
     {
         $article = new Article($this->request->request->all());
-        //Увеличим просмотры
+        //Обнулим просмотры
         $article->views_count = 0;
+
+        //Загрузка изображения
+        if ($image = $this->request->files->get('image')) {
+            $imagesPath = $this->config->get('rootDir').$this->config->get('articlesImagesPath');
+            $article->image = $image->getUniqueName($imagesPath);
+            $image->move($imagesPath, $article->image);
+        }
         $article->save();
 
         $this->response->headers->set('Location', '/admin/article/edit/' . $article->id);
