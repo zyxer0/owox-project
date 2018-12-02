@@ -23,5 +23,10 @@
             {/foreach}
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                {include 'pagination.tpl'}
+            </div>
+        </div>
     </div>
 </div>

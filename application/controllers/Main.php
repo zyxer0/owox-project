@@ -14,8 +14,9 @@ class Main extends Controller
     public function index()
     {
         $this->articlesInstance = new ArticlesModel();
-        $articles = $this->articlesInstance->getArticlesForMainPage(12);
-        $this->view->assign('articles', $articles);
+        $articles = $this->articlesInstance->getArticlesList();
+        $this->view->assign('articles', $articles['items']);
+        $this->view->assign('pagination', $articles['pagination']);
 
         $this->authorsInstance = new AuthorsModel();
         $authors = $this->authorsInstance->getAllAuthors();

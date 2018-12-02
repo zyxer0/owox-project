@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Router;
 use App\Models\Articles as ArticlesModel;
+use App\Models\Authors;
+use App\Models\Categories;
 
 class Articles extends Controller
 {
@@ -19,6 +21,17 @@ class Articles extends Controller
         //Увеличим просмотры
         $article->views_count++;
         $article->update(); // todo Не увеличивать когда обновляется страница
+
+        if ($article->author_id > 0) {
+            $authorsInstance = new Authors();
+            $author = $authorsInstance->getAuthorById($article->author_id);
+            $this->view->assign('author', $author);
+        }
+        if ($article->category_id > 0) {
+            $categoriesInstance = new Categories();
+            $category = $categoriesInstance->getCategoryBuId($article->category_id);
+            $this->view->assign('category', $category);
+        }
 
         // TODO get author and other
 

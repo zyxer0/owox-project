@@ -69,34 +69,4 @@ class Articles extends Model
         $result['pagination'] = $this->paginator->getLinks();
         return $result;
     }
-
-    public function getArticlesForMainPage(int $limit = 20)
-    {
-        $query = $this->queryBuilder->select([
-            'a.id',
-            'a.category_id',
-            'a.author_id',
-            'a.name',
-            'a.url',
-            'a.text',
-            'a.image',
-            'a.created',
-            'a.views_count',
-        ])
-            ->from('articles', 'a')
-            ->orderBy('a.created DESC')
-            ->limit($limit);
-
-        $sql = $query->getSQL();
-        $query->clear();
-
-        $this->db->makeQuery($sql);
-
-        $articles = [];
-        while ($article = $this->db->resultActiveRecord(ArticleActiveRecord::class)) {
-            $articles[] = $article;
-        }
-
-        return $articles;
-    }
 }

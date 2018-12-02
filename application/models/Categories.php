@@ -7,6 +7,22 @@ use App\DB\ActiveRecord\Category as CategoryActiveRecord;
 
 class Categories extends Model
 {
+    public function getCategoryBuId(int $id)
+    {
+        $query = $this->queryBuilder->select([
+            'c.id',
+            'c.name',
+            'c.articles_count',
+        ])
+            ->from('categories_articles', 'c')
+            ->orderBy('c.id DESC')
+            ->where('c.id='.$id)
+            ->getSQL();
+
+        $this->db->makeQuery($query);
+        return $this->db->resultActiveRecord(CategoryActiveRecord::class);
+    }
+
     public function getAllCategories()
     {
         $query = $this->queryBuilder->select([

@@ -25,9 +25,6 @@ class AdminArticles extends Controller
     public function showArticlesList($params = [])
     {
         $articles = $this->articlesModel->getArticlesList();
-
-        // TODO get author and other
-
         $this->view->assign('title', 'Admin articles');
         $this->view->assign('description', 'Admin articles');
         $this->view->assign('keywords', 'Admin articles');
