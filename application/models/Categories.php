@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Core\Model;
 use App\DB\ActiveRecord\Category as CategoryActiveRecord;
+use function Couchbase\defaultDecoder;
 
 class Categories extends Model
 {
@@ -23,18 +24,27 @@ class Categories extends Model
         return $this->db->resultActiveRecord(CategoryActiveRecord::class);
     }
 
-    public function getAllCategories()
+    public function getAllCategories($order = null)
     {
         $query = $this->queryBuilder->select([
             'c.id',
             'c.name',
             'c.articles_count',
         ])
-            ->from('categories_articles', 'c')
-            ->orderBy('c.id DESC')
-            ->getSQL();
+            ->from('categories_articles', 'c');
 
-        $this->db->makeQuery($query);
+        if (null !== $order) {
+            switch ($order) {
+                case 'articles_count':
+                    $query->orderBy('c.articles_count DESC');
+                    break;
+                default:
+                    $query->orderBy('c.id DESC');
+                    break;
+            }
+        }
+
+        $this->db->makeQuery($query->getSQL());
         $categories = [];
         while ($category = $this->db->resultActiveRecord(CategoryActiveRecord::class)) {
             $categories[] = $category;

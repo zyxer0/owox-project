@@ -63,11 +63,27 @@ class AdminArticles extends Controller
      */
     public function updateArticle($params = [])
     {
+        $categoriesInstance = new Categories();
         if (!$article = $this->articlesModel->getArticleByID((int)$params['id'])) {
             Router::page404();
             exit;
         }
         $image = null;
+
+        // Если изменилась категория, нужно отнять её у текущей, и добавить к новой
+        $newCategoryId = $this->request->request->get('category_id', 0);
+        if ($article->category_id > 0 && $article->category_id != $newCategoryId) {
+            $category = $categoriesInstance->getCategoryBuId($article->category_id);
+            $category->articles_count--;
+            $category->update();
+            unset($category);
+        }
+
+        if ($article->category_id != $newCategoryId && $newCategoryId > 0) {
+            $category = $categoriesInstance->getCategoryBuId($newCategoryId);
+            $category->articles_count++;
+            $category->update();
+        }
 
         $article->author_id     = $this->request->request->get('author_id');
         $article->category_id   = $this->request->request->get('category_id');
@@ -122,6 +138,7 @@ class AdminArticles extends Controller
      */
     public function addArticle($params = [])
     {
+        $categoriesInstance = new Categories();
         $article = new Article($this->request->request->all());
         //Обнулим просмотры
         $article->views_count = 0;
@@ -132,6 +149,13 @@ class AdminArticles extends Controller
             $article->image = $image->getUniqueName($imagesPath);
             $image->move($imagesPath, $article->image);
         }
+
+        if ($article->category_id > 0) {
+            $category = $categoriesInstance->getCategoryBuId($article->category_id);
+            $category->articles_count++;
+            $category->update();
+        }
+
         $article->save();
 
         $this->response->headers->set('Location', '/admin/article/edit/' . $article->id);
@@ -143,9 +167,15 @@ class AdminArticles extends Controller
      */
     public function removeArticle($params = [])
     {
+        $categoriesInstance = new Categories();
         $ids = $this->request->request->get('id');
         foreach ($ids as $id) {
             $article = $this->articlesModel->getArticleByID($id);
+            if ($article->category_id > 0) {
+                $category = $categoriesInstance->getCategoryBuId($article->category_id);
+                $category->articles_count--;
+                $category->update();
+            }
             $article->delete();
         }
 

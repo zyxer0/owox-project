@@ -193,12 +193,12 @@ class MySQLBuilder implements Builder
             $this->query .= ' WHERE ' . implode(' ', $this->where);
         }
 
-        if (!empty($this->orderBy)) {
-            $this->query .= ' ORDER BY ' . implode(', ', $this->orderBy);
-        }
-
         if (!empty($this->groupBy)) {
             $this->query .= ' GROUP BY ' . implode(', ', $this->groupBy);
+        }
+
+        if (!empty($this->orderBy)) {
+            $this->query .= ' ORDER BY ' . implode(', ', $this->orderBy);
         }
 
     }

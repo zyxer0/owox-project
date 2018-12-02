@@ -69,4 +69,19 @@ class Articles extends Model
         $result['pagination'] = $this->paginator->getLinks();
         return $result;
     }
+
+    public function getArticlesDates()
+    {
+        $query = $this->queryBuilder->select([
+            'DATE(a.created) as date',
+        ])
+            ->from('articles', 'a')
+            ->groupBy('date')
+            ->orderBy('date DESC');
+
+        $this->db->makeQuery($query->getSQL());
+        $query->clear();
+        $articlesDates = $this->db->results('date');
+        return $articlesDates;
+    }
 }
