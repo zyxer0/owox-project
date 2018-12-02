@@ -29,6 +29,18 @@ class Router
                 'id',
             ]
         ],
+        'ajax/authors' => [
+            'controller' => \App\Controllers\Authors::class,
+            'method'     => 'ajaxListArticles',
+        ],
+        'ajax/date_publishers' => [
+            'controller' => \App\Controllers\Articles::class,
+            'method'     => 'ajaxDatePublishers',
+        ],
+        'ajax/categories' => [
+            'controller' => \App\Controllers\Categories::class,
+            'method'     => 'ajaxShowCategories',
+        ],
         '(admin|admin/articles)' => [
             'controller' => \App\Controllers\AdminArticles::class,
             'method'     => 'showArticlesList',

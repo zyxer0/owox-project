@@ -41,4 +41,15 @@ class Articles extends Controller
         $this->view->assign('article', $article);
         $this->response->setContent($this->view->render('article.tpl'));
     }
+
+    public function ajaxDatePublishers($params = [])
+    {
+        $this->view->wrapper = false;
+        $articlesInstance = new ArticlesModel();
+        $articlesDates = $articlesInstance->getArticlesDates();
+        $this->view->assign('articlesDates', $articlesDates);
+        $this->response->headers->set('Content-type', 'application/json; charset=UTF-8');
+        $content = json_encode($this->view->render('dates_publishers_sidebar.tpl'));
+        $this->response->setContent($content);
+    }
 }

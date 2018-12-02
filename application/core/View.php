@@ -22,6 +22,8 @@ class View
      */
     public $request;
 
+    public $wrapper = 'index.tpl';
+
     public function __construct()
     {
         $this->config = Config::getInstance();
@@ -63,8 +65,13 @@ class View
      */
     public function render($template)
     {
-        $this->assign('content', $this->smarty->fetch($template));
-        return $this->smarty->fetch('index.tpl');
+        if ($this->wrapper !== null && $this->wrapper !== false) {
+            $this->assign('content', $this->smarty->fetch($template));
+            return $this->smarty->fetch('index.tpl');
+        } else {
+            return $this->smarty->fetch($template);
+        }
+
     }
 
     /**
