@@ -38,3 +38,16 @@
     </div>
 </div>
 {/if}
+
+{if $topArticles}
+<div class="row">
+    <div class="col-md-12">
+        <h3>Топ статей категории "{$category->name|escape}"</h3>
+    </div>
+    <div class="articles_list">
+        {foreach $topArticles as $a}
+            {include 'tiny_article.tpl'}
+        {/foreach}
+    </div>
+</div>
+{/if}

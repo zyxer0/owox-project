@@ -101,6 +101,7 @@ function createTableArticles()
           KEY `category_id` (`category_id`),
           KEY `url` (`url`),
           KEY `author_id` (`author_id`),
+          KEY `views_count` (`views_count`),
           KEY `created` (`created`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
     $db->makeQuery($query);

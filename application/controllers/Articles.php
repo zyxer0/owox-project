@@ -29,11 +29,14 @@ class Articles extends Controller
         }
         if ($article->category_id > 0) {
             $categoriesInstance = new Categories();
+
+            // получаем топ статей данной тематики
+            $topArticles = $articlesInstance->getTopArticles($article->category_id, $article->id);
+            $this->view->assign('topArticles', $topArticles);
+
             $category = $categoriesInstance->getCategoryBuId($article->category_id);
             $this->view->assign('category', $category);
         }
-
-        // TODO get author and other
 
         $this->view->assign('title', $article->name);
         $this->view->assign('description', $article->name);
